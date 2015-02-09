@@ -1,0 +1,14 @@
+{
+  "name": "Chatzilla",
+  "version": "0.0.0",
+  "authors": [
+    "thekris121 <kristjanj11@ru.is>"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "angular": "~1.3.13"
+  }
+}

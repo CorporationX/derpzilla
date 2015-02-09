@@ -1,0 +1,23 @@
+<!doctype html>
+<html ng-app="chatApp">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Chatzilla</title>
+
+        
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script src="/bower_components/angular/angular.js"></script>
+        <script src="/bower_components/angular-route/angular-route.js"></script>
+        <script src="/client/app.js"></script>
+        <script src="/client/controllers/LoginController.js"></script>
+        <script src="/client/controllers/HomeController.js"></script>
+        <link rel="stylesheet" href="/client/css/index.css">
+
+    </head>
+    <body>
+
+    	<div ng-view></div>
+        
+    </body>
+</html>

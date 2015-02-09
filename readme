@@ -1,0 +1,12 @@
+In terminal do the following:
+
+In the chatzilla main folder type: "bower install"
+	If you do not have bower then "npm install bower" is a thing ^ ^
+
+Then go to the server folder and type npm install
+There you can type in one console window "node chatserver.js"
+
+In another console window open a python server in the chatzilla main window 
+
+
+Web browser: localhost:8000

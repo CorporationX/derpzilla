@@ -1,0 +1,26 @@
+<div class="roomList">
+	<div class="createRoom">
+		<form novalidate name="roomForm">
+
+
+			<label>
+				Room Name: 
+				<input type="text" name="roomName" ng-model="room.name" required="required" ng-minlength="2">
+			</label>
+			<button ng-click="roomForm.$valid && createRoom()">Create Room</button>
+		
+		</form>
+
+		<div class="errorBlock" ng-show="roomForm.roomName.$touched || roomForm.$submitted">
+			<p class="errorMessage" ng-show="errors.available">That room already exists</p>
+			<p class="errorMessage" ng-show="roomForm.roomName.$error.required">Room name is required</p>
+			<p class="errorMessage" ng-show="roomForm.roomName.$error.minlength">Room name must be at least 2 characters long</p>
+		</div>
+	</div>
+
+	<button ng-click="getRooms()">GetRooms</button>
+
+	<ul>
+		<li ng-repeat="room in rooms">{{room}}</li>
+	</ul>
+</div>
