@@ -1,7 +1,5 @@
-angular.module("chatApp").controller("LoginController", ["$scope", "$location",
-	function ($scope, $location) {
-
-		var socket = io.connect("http://localhost:8080");
+angular.module("chatApp").controller("LoginController", ["$scope", "$location", "socket", "dataFactory",
+	function ($scope, $location, socket, dataFactory) {
 
 		$scope.login = "login";
 
@@ -18,11 +16,10 @@ angular.module("chatApp").controller("LoginController", ["$scope", "$location",
 			socket.emit("adduser", $scope.user.username, function (available) {
 
 				if (!available) {
-					$scope.errors.available = false;
+					$scope.errors.available = true;
 				} else {
-					$scope.$apply(function () {
-						$location.path("/home")
-					});
+					dataFactory.setConnectedUser($scope.user.username);
+					$location.path("/rooms");
 				}
 
 			});

@@ -1,23 +1,22 @@
-<div>
-	<h1>Login Page</h1>
-	<div>
+<div id="loginContainer" class="text-center">
+	<div id="loginForm">
 
-		<div class="loginContainer">
+		<h1>Login Page</h1>
 
-			<form novalidate name="loginForm">
-				<label> Username: 
-					<input type="text" name="username" ng-model="user.username" required="required" ng-minlength="2">
-				</label>
-				<button ng-click="loginForm.$valid && login()">Log in</button>
-			
-			</form>
+		<form novalidate name="loginForm">
+			<label> Username: 
+				<input type="text" name="username" ng-model="user.username" required="required" ng-minlength="2">
+			</label>
+			<button ng-click="loginForm.$valid && login()">Log in</button>
+		
+		</form>
 
-			<div class="errorBlock" ng-show="loginForm.username.$touched || loginForm.$submitted">
-				<p class="errorMessage" ng-show="errors.available">That username is already taken</p>
-				<p class="errorMessage" ng-show="loginForm.username.$error.required">Username is required</p>
-				<p class="errorMessage" ng-show="loginForm.username.$error.minlength">Username must be at least 2 characters long</p>
-			</div>
+		<div class="errorBlock" ng-show="loginForm.username.$touched || loginForm.$submitted">
+			<p class="errorMessage" ng-show="errors.available">That username is already taken</p>
+			<p class="errorMessage" ng-show="loginForm.username.$error.required">Username is required</p>
+			<p class="errorMessage" ng-show="loginForm.username.$error.minlength">Username must be at least 2 characters long</p>
 		</div>
-
+	
 	</div>
+
 </div>
