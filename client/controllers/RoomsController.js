@@ -8,6 +8,15 @@ angular.module("chatApp").controller("RoomsController", ["$scope", "$location", 
 		$scope.rooms = [];
 		$scope.connectedUser = "";
 
+		$scope.getRooms = function () {
+			socket.emit("rooms");
+		};
+
+		socket.on("roomlist", function (rooms) {
+			console.log(rooms);
+			$scope.rooms = rooms;
+		});
+
 		var init = function () {
 
 			$scope.connectedUser = dataFactory.getConnectedUser();
@@ -15,6 +24,8 @@ angular.module("chatApp").controller("RoomsController", ["$scope", "$location", 
 			if (!$scope.connectedUser) {
 				$location.path("/login");
 			}
+
+			$scope.getRooms();
 
 		};
 
