@@ -26,7 +26,7 @@ body{
 }
 
 /*ROOMSPAGE*/
-#roomList{
+#rooms{
 	width: 800px;
 	height: 400px;
 	position: absolute;
@@ -38,14 +38,87 @@ body{
 	background-color: white;
 }
 
+ul, li{
+	margin: 0;
+	padding: 0;
+}
+
 li{
 	list-style-type: none;
 }
 
 .logout{
-	border-left: 1px solid black;
-	border-bottom: 1px solid black;
+	margin: 10px;
 	width: 200px;
 	padding: 10px;
 	float: right;
+}
+
+/*ROOMPAGE*/
+#room{
+	width: 800px;
+	height: 400px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin: -200px 0 0 -400px;
+	border-radius: 10px;
+	border: 1px solid black;
+	background-color: white;
+}
+
+.roomUsers{
+	background-color: blue;
+}
+
+.roomChat{
+	background-color: red;
+}
+
+.roomChatBox{
+	height: 200px;
+	background-color: rgb(0, 255, 0);
+	margin-bottom: 10px;
+	overflow: auto;
+}
+
+.roomChatInput input{
+	width: 80%;
+	height: 30px;
+}
+
+.roomChatInput button{
+	width: 50px;
+	height: 30px;
+	float: right;
+}
+
+.roomChatInput span{
+	width: 30px;
+	float: left;
+	height: 30px;
+	line-height: 30px;
+}
+
+.roomChatBox li{
+	float: left;
+	width: 100%;
+}
+
+.roomChatBox span{
+	margin: 0;
+	padding: 3px;
+}
+
+.toRooms{
+	margin: 10px;
+	float: left;
+}
+
+.userList li{
+	cursor: pointer;
+}
+
+.userList li:hover{
+	color: white;
 }

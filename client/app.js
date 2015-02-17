@@ -10,11 +10,11 @@ angular.module("chatApp", ["ng", "ngRoute"])
 			templateUrl: "/client/views/rooms.html",
 			controller: "RoomsController"
 		}).when("/room/:roomName", {
-			templateUrl: "/cleint/views/room.html",
+			templateUrl: "/client/views/room.html",
 			controller: "RoomController"
 		})
 		.otherwise({
-			redirectTo: "/login"
+			redirectTo: "/rooms"
 		});
 
 }]);

@@ -8,6 +8,9 @@ angular.module("chatApp").factory("dataFactory", [function () {
 		},
 		getConnectedUser: function () {
 			return connectedUser;
+		},
+		logout: function () {
+			connectedUser = "";
 		}
 	};
 

@@ -7,6 +7,8 @@ angular.module("chatApp").controller("LoginController", ["$scope", "$location", 
 			username: ""
 		};
 
+		$scope.connectedUser = dataFactory.getConnectedUser();
+
 		$scope.errors = {
 			available: false
 		};
