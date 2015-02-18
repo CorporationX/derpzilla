@@ -1,0 +1,61 @@
+<div class="container">
+	<div class="row blue text-center">
+		<h1>{{currentTopic}}</h1>
+	</div>
+	<div class="row">
+		<div class="col-md-9">
+			
+			<div class="row red">
+				<div class="col-md-2" ng-repeat="(key, val) in openItems" ng-class="{true: 'green', false: 'purple'}[key===currentOpen.ID]" ng-click="open(val.type+'-'+val.name)">
+					{{val.name}}
+				</div>
+			</div>
+			
+			<div class="row blue roomChat">
+				
+				<div class="col-md-12 roomChatBox purple">
+					<ul>
+						<li ng-repeat="message in openItems[currentOpen.ID].messages">
+							<span class="col-md-3 text-left">
+								{{message.nick | usernameFilter}}:
+							</span> 
+							<span class="col-md-9 text-left">
+								{{message.message}}
+							</span>
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-md-12 input-group">
+					<input type="text" ng-model="inputText" maxlength="200" class="form-control" placeholder="Enter a message...">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" ng-click="sendText()">Send</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="row">
+				<div class="col-md-6" ng-class="{true: 'purple', false: 'blue'}[showRooms]" ng-click="show(true)">
+					ROOMS
+				</div>
+				<div class="col-md-6 blue" ng-class="{true: 'purple', false: 'blue'}[!showRooms]" ng-click="show(false)">
+					USERS
+				</div>
+			</div>
+			<div class="row green">
+				<div ng-repeat="(roomName, val) in rooms" ng-show="showRooms">
+					{{roomName}}
+				</div>
+				<div ng-repeat="(key, val) in openItems[currentOpen.ID].users | orderBy:'val'" ng-show="!showRooms" ng-click="privateChat(val)">
+					{{val}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+OpenItems: {{openItems}}
+<br>
+CurrentOpen: {{currentOpen}}

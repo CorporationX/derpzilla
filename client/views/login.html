@@ -1,7 +1,9 @@
 <div id="loginContainer" class="text-center">
 	<div id="loginForm">
 
-		<h1>Login Page</h1>
+		<div>
+			<h1>Login Page</h1>
+		</div>
 
 		<form novalidate name="loginForm">
 			<label> Username: 
@@ -15,10 +17,6 @@
 			<p class="errorMessage" ng-show="errors.available">That username is already taken</p>
 			<p class="errorMessage" ng-show="loginForm.username.$error.required">Username is required</p>
 			<p class="errorMessage" ng-show="loginForm.username.$error.minlength">Username must be at least 2 characters long</p>
-		</div>
-
-		<div>
-			The connected user is {{connectedUser}}
 		</div>
 	
 	</div>

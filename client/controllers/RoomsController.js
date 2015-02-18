@@ -27,6 +27,7 @@ angular.module("chatApp").controller("RoomsController", ["$scope", "$location", 
 		};
 
 		socket.on("roomlist", function (rooms) {
+			console.log("got roomlist");
 			$scope.rooms = rooms;
 		});
 

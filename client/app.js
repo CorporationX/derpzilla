@@ -6,15 +6,12 @@ angular.module("chatApp", ["ng", "ngRoute"])
 	$routeProvider.when("/login", {
 			templateUrl: "/client/views/login.html",
 			controller: "LoginController"
-		}).when("/rooms", {
-			templateUrl: "/client/views/rooms.html",
-			controller: "RoomsController"
-		}).when("/room/:roomName", {
-			templateUrl: "/client/views/room.html",
-			controller: "RoomController"
+		}).when("/home", {
+			templateUrl: "/client/views/home.html",
+			controller: "HomeController"
 		})
 		.otherwise({
-			redirectTo: "/rooms"
+			redirectTo: "/home"
 		});
 
 }]);
