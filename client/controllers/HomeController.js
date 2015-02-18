@@ -256,7 +256,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		};
 
 		// Initialize - get the rooms list and join lobby
-		// if not a user then just redirect to login
+		// if not a user then just redirect to loginlin
 		var init = function () {
 
 			$scope.connectedUser = dataFactory.getConnectedUser();
