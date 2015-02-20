@@ -157,10 +157,7 @@ io.sockets.on('connection', function (socket) {
 
 	// when the user disconnects.. perform this
 	socket.on('disconnect', function () {
-		console.log('DISCONNECT CALLED');
 		if (socket.username) {
-
-			console.log('DISCONNECT CALLED WITH VALID USEDNAME');
 
 			//If the socket doesn't have a username the client joined and parted without
 			//chosing a username, so we just close the socket without any cleanup.

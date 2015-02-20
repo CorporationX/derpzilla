@@ -14,6 +14,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		$scope.currentTopic = "Welcome";
 
+		$scope.newRoomName = "";
+
 		// Used in the html to decide whether to show the list of rooms or a list of users in the current room/chat 
 		$scope.showRooms = false;
 
@@ -24,8 +26,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// Users have a type, name, "messages" 
 		$scope.openItems = {};
 
+		// Keep the ID of the open tabs because angularjs iterates over objects in alphabetical order
+		$scope.openTabs = [];
+
 		// List of room names
-		$scope.rooms = [];
+		$scope.rooms = {};
 
 		// Get the roomlist
 		$scope.getRooms = function () {
@@ -55,9 +60,19 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 					$scope.openItems[ID] = roomItem;
 
+					$scope.openTabs.push(ID);
+
 					$scope.currentOpen = {
 						ID: ID
 					};
+
+					$scope.getRooms();
+
+				} else {
+
+					if ($scope.rooms[roomObj.room].banned[$scope.connectedUser]) {
+						console.log("You are banned fcker !!!");
+					}
 
 				}
 			});
@@ -69,17 +84,13 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// But if we are in a private chat then we have to create the message and add it to the 
 		// chat we are having in openItems[ID] where ID is User-username
 		$scope.sendText = function () {
+
 			if ($scope.inputText && $scope.openItems[$scope.currentOpen.ID].type === "Room") {
 				socket.emit("sendmsg", {
 					roomName: $scope.openItems[$scope.currentOpen.ID].name,
 					msg: $scope.inputText
-				}, function (success) {
-					if (success) {
-						$scope.inputText = "";
-					} else {
-						console.log("couldnt send message");
-					}
 				});
+				$scope.inputText = "";
 
 				return;
 			}
@@ -92,7 +103,6 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 
 			if ($scope.inputText && $scope.openItems[$scope.currentOpen.ID].type === "User") {
-				console.log("sendingprivate");
 				socket.emit("privatemsg", {
 					nick: $scope.openItems[$scope.currentOpen.ID].chatWith,
 					message: $scope.inputText
@@ -105,6 +115,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 					}
 				});
 			}
+
 		};
 
 		// Called when we want to start chatting with someone.
@@ -117,7 +128,13 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				return;
 			}
 
+
 			var ID = "User-" + user;
+
+			if ($scope.openTabs.indexOf(ID) > -1) {
+				$scope.currentOpen.ID = ID;
+				return;
+			}
 
 			var userObj = {
 
@@ -143,6 +160,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				ID: ID
 			};
 
+			$scope.openTabs.push(ID);
+
 
 		};
 
@@ -154,12 +173,22 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		// User list has been changed in some room - find which room and change the userlist
 		socket.on("updateusers", function (data1, data2, data3) {
-			// console.log("updateusers", data1, " - ", data2, " - ", data3);
+			console.log("updateusers", data1, " - ", data2, " - ", data3);
 
-			var ID = "Room-" + data1;
+			var ID1 = "Room-" + data1;
 
-			if (ID in $scope.openItems) {
-				$scope.openItems[ID].users = data2;
+			if (ID1 in $scope.openItems) {
+				$scope.openItems[ID1].users = data2;
+				$scope.openItems[ID1].ops = data3;
+				return;
+			}
+
+			var ID2 = "User-" + data1;
+
+			if (ID2 in $scope.openItems) {
+				$scope.openItems[ID2].users = data2;
+				$scope.openItems[ID2].ops = data3;
+				return;
 			}
 
 		});
@@ -184,7 +213,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// Need to check whether there is already a conversation in the openItems[ID] and then we can just add to the messages
 		// else we need to create a new object
 		socket.on("recv_privatemsg", function (data1, data2, data3) {
-			console.log("recv_privatemsg", data1, " - ", data2, " - ", data3);
+			// console.log("recv_privatemsg", data1, " - ", data2, " - ", data3);
 
 			var ID = "User-" + data1;
 
@@ -219,20 +248,48 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 
 				$scope.openItems[ID] = userItem;
+
+				$scope.openTabs.push(ID);
 			}
 
 		});
 
 		// TODO
 		socket.on("servermessage", function (data1, data2, data3) {
-			// console.log("servermessage", data1, " - ", data2, " - ", data3);
+			console.log("recv_privatemsg", data1, " - ", data2, " - ", data3);
+
+			$scope.getRooms();
 		});
 
+		socket.on("kicked", function (data1, data2, data3) {
+			// console.log("kicked", data1, data2, data3);
+
+			var ID = "Room-" + data1;
+
+			if (ID in $scope.openItems && data2 === $scope.connectedUser) {
+				$scope.closeTab(ID);
+			}
+
+			$scope.getRooms();
+
+		});
+
+		socket.on("banned", function (data1, data2, data3) {
+			console.log("banned", data1, data2, data3);
+
+			var ID = "Room-" + data1;
+
+			if (ID in $scope.openItems && data2 === $scope.connectedUser) {
+				$scope.closeTab(ID);
+			}
+
+			$scope.getRooms();
+		});
 
 		// new chat messages available in some room - need to check whether we have that room open in openItems
 		// and add the new messages to openItems[ID].messages
 		socket.on("updatechat", function (data1, data2, data3) {
-			console.log("updatechat", data1, " - ", data2, " - ", data3);
+			// console.log("updatechat", data1, " - ", data2, " - ", data3);
 
 			var ID = "Room-" + data1;
 
@@ -241,6 +298,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				$scope.openItems[ID].messages = data2;
 
 			}
+
+			$scope.getRooms();
 
 		});
 
@@ -253,6 +312,106 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// currently don't have a way to delete tabs
 		$scope.open = function (ID) {
 			$scope.currentOpen.ID = ID;
+		};
+
+		// CLOSE TAB
+		$scope.closeTab = function (ID) {
+
+			var index = 0;
+			var newIDIndex = 0;
+
+			if ($scope.openItems[ID].type === "Room") {
+
+				index = $scope.openTabs.indexOf(ID);
+
+				var roomName = $scope.openItems[ID].name;
+
+				delete $scope.openItems[ID];
+
+				if ($scope.currentOpen.ID === ID) {
+					newIDIndex = index - 1;
+
+					$scope.currentOpen.ID = $scope.openTabs[newIDIndex];
+				}
+
+				if (index > -1) {
+					$scope.openTabs.splice(index, 1);
+				}
+
+				socket.emit("partroom", roomName);
+
+
+			} else {
+
+				index = $scope.openTabs.indexOf(ID);
+
+				if ($scope.currentOpen.ID === ID) {
+					newIDIndex = index - 1;
+
+					$scope.currentOpen.ID = $scope.openTabs[newIDIndex];
+				}
+
+				if (index > -1) {
+					$scope.openTabs.splice(index, 1);
+				}
+
+			}
+
+
+
+		};
+
+		$scope.createRoom = function () {
+
+			var tempNewRoomName = $scope.newRoomName.toLowerCase();
+
+			if (tempNewRoomName === "") {
+				return;
+			}
+
+			if (tempNewRoomName in $scope.rooms) {
+				return;
+			}
+
+			$scope.joinRoom(tempNewRoomName);
+
+			$scope.newRoomName = "";
+
+		};
+
+		$scope.openChatRoom = function (room) {
+
+
+			var ID = "Room-" + room;
+
+			var index = $scope.openTabs.indexOf(ID);
+
+			if (index > -1) {
+				$scope.currentOpen.ID = ID;
+				return;
+			}
+
+			$scope.joinRoom(room);
+		};
+
+		$scope.ban = function (user) {
+
+			socket.emit("ban", {
+				user: user,
+				room: $scope.openItems[$scope.currentOpen.ID].name
+			}, function (success) {
+				$scope.getRooms();
+			});
+
+		};
+
+		$scope.kick = function (user) {
+
+			socket.emit("kick", {
+				user: user,
+				room: $scope.openItems[$scope.currentOpen.ID].name
+			});
+
 		};
 
 		// Initialize - get the rooms list and join lobby

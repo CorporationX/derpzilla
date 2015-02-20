@@ -1,13 +1,14 @@
 <div class="container">
 	<div class="row blue text-center">
-		<h1>{{currentTopic}}</h1>
+		<h1>{{openItems[currentOpen.ID].topic}}</h1>
 	</div>
 	<div class="row">
 		<div class="col-md-9">
 			
 			<div class="row red">
-				<div class="col-md-2" ng-repeat="(key, val) in openItems" ng-class="{true: 'green', false: 'purple'}[key===currentOpen.ID]" ng-click="open(val.type+'-'+val.name)">
-					{{val.name}}
+				<div class="col-md-2 selectBox" ng-repeat="tab in openTabs" ng-class="{true: 'green', false: 'purple'}[tab===currentOpen.ID]" ng-click="open(tab)">
+					{{openItems[tab].name}}
+					<span class="pull-right" ng-hide="tab==='Room-lobby'"><i class="fa fa-times" ng-click="closeTab(tab)"></i></span>		
 				</div>
 			</div>
 			
@@ -36,26 +37,49 @@
 			</div>
 		</div>
 		<div class="col-md-3">
+			<div class="row green">
+				Create new room
+			</div>
+			<div class="row input-group">
+					<input type="text" ng-model="newRoomName" maxlength="20" class="form-control" placeholder="Enter a roomname...">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" ng-click="createRoom()">Create</button>
+					</span>
+			</div>
 			<div class="row">
-				<div class="col-md-6" ng-class="{true: 'purple', false: 'blue'}[showRooms]" ng-click="show(true)">
+				<div class="col-md-6 selectBox" ng-class="{true: 'purple', false: 'blue'}[showRooms]" ng-click="show(true)">
 					ROOMS
 				</div>
-				<div class="col-md-6 blue" ng-class="{true: 'purple', false: 'blue'}[!showRooms]" ng-click="show(false)">
+				<div class="col-md-6 blue selectBox" ng-class="{true: 'purple', false: 'blue'}[!showRooms]" ng-click="show(false)">
 					USERS
 				</div>
 			</div>
-			<div class="row green">
-				<div ng-repeat="(roomName, val) in rooms" ng-show="showRooms">
+			<div class="row green selectBox">
+				<div ng-repeat="(roomName, val) in rooms" ng-show="showRooms" ng-click="openChatRoom(roomName)">
 					{{roomName}}
+				</div>
+				<div ng-repeat="(key, val) in openItems[currentOpen.ID].ops | orderBy:'val'" ng-show="!showRooms" ng-click="privateChat(val)">
+					{{val}} - Op
 				</div>
 				<div ng-repeat="(key, val) in openItems[currentOpen.ID].users | orderBy:'val'" ng-show="!showRooms" ng-click="privateChat(val)">
 					{{val}}
+					<span ng-show="openItems[currentOpen.ID].ops[connectedUser]">
+						<i class="fa fa-ban pull-right" title="Ban" ng-click="ban(val); $event.stopPropagation();"></i>
+						<i class="fa fa-user-times pull-right" title="Kick" ng-click="kick(val); $event.stopPropagation();"></i>
+					</span>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
+openTabs: {{openTabs}}
+<br>
+<br>
 OpenItems: {{openItems}}
 <br>
+<br>
 CurrentOpen: {{currentOpen}}
+<br>
+<br>
+Rooms: {{rooms}}

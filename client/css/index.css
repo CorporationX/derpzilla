@@ -142,3 +142,17 @@ li{
 	background-color: rgb(255, 0, 255);
 	border: 1px solid black;
 }
+
+.selectBox{
+	cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+.selectBox:hover{
+	cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
