@@ -1,6 +1,6 @@
-angular.module("chatApp").controller("HomeController", ["$scope", "$location", "socket", "dataFactory",
+angular.module("chatApp").controller("HomeController", ["$scope", "$location", "socket", "dataFactory", "$modal",
 
-	function ($scope, $location, socket, dataFactory) {
+	function ($scope, $location, socket, dataFactory, $modal) {
 
 		//
 		// Notes: We only use Homecontroller and home.html now because everything happens on one page and one url
@@ -14,7 +14,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		$scope.currentTopic = "Welcome";
 
-		$scope.newRoomName = "";
+		// Filled in with the createRoomModal
+		$scope.newRoomItem = "";
 
 		// Used in the html to decide whether to show the list of rooms or a list of users in the current room/chat 
 		$scope.showRooms = false;
@@ -42,7 +43,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// to the ID from the object
 		$scope.joinRoom = function (room) {
 			var roomObj = {
-				room: room
+				room: room.name,
+				pass: room.password
 			};
 
 			socket.emit("joinroom", roomObj, function (success, reason) {
@@ -55,8 +57,13 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 						name: roomObj.room,
 						topic: "",
 						messages: [],
-						users: []
+						users: [],
+						locked: false
 					};
+
+					if (!(ID in $scope.openItems) && roomObj.pass) {
+						roomItem.locked = true;
+					}
 
 					$scope.openItems[ID] = roomItem;
 
@@ -70,8 +77,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 				} else {
 
-					if ($scope.rooms[roomObj.room].banned[$scope.connectedUser]) {
+					if (reason === "banned") {
 						console.log("You are banned fcker !!!");
+					} else if (reason === "wrong password") {
+						console.log("wrong password");
 					}
 
 				}
@@ -357,30 +366,14 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 			}
 
-
-
-		};
-
-		$scope.createRoom = function () {
-
-			var tempNewRoomName = $scope.newRoomName.toLowerCase();
-
-			if (tempNewRoomName === "") {
-				return;
-			}
-
-			if (tempNewRoomName in $scope.rooms) {
-				return;
-			}
-
-			$scope.joinRoom(tempNewRoomName);
-
-			$scope.newRoomName = "";
-
 		};
 
 		$scope.openChatRoom = function (room) {
 
+
+			var roomItem = {
+				name: room
+			};
 
 			var ID = "Room-" + room;
 
@@ -391,7 +384,14 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				return;
 			}
 
-			$scope.joinRoom(room);
+			if ($scope.rooms[room].locked) {
+
+				$scope.loginPassword(roomItem);
+
+				return;
+			}
+
+			$scope.joinRoom(roomItem);
 		};
 
 		$scope.ban = function (user) {
@@ -414,6 +414,49 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+
+		$scope.createRoom = function () {
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/createRoomModal.html",
+				controller: "ModalInstanceController"
+			});
+
+			modalInstance.result.then(function (selectedItems) {
+
+				$scope.newRoomItem = selectedItems;
+
+				if ($scope.newRoomItem.name in $scope.rooms) {
+					return;
+				}
+
+				$scope.joinRoom($scope.newRoomItem);
+
+				$scope.newRoomItem = "";
+			});
+
+		};
+
+		$scope.loginPassword = function (roomItem) {
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/loginPassword.html",
+				controller: "LoginInstanceController",
+				resolve: {
+					name: function () {
+						return $scope.openItems[$scope.currentOpen.ID].name;
+					}
+				}
+			});
+
+			modalInstance.result.then(function (selectedItems) {
+				roomItem.password = selectedItems;
+				$scope.joinRoom(roomItem);
+				return;
+			});
+
+		};
+
 		// Initialize - get the rooms list and join lobby
 		// if not a user then just redirect to loginlin
 		var init = function () {
@@ -425,7 +468,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			} else {
 				$scope.getRooms();
 
-				$scope.joinRoom("lobby");
+				var roomObj = {
+					name: "lobby"
+				};
+
+				$scope.joinRoom(roomObj);
 			}
 
 		};

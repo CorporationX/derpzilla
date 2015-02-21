@@ -156,3 +156,8 @@ li{
     -moz-user-select: none;
     user-select: none;
 }
+
+#createRoom button{
+	width: 95%;
+	margin: 5px;
+}

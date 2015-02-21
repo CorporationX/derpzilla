@@ -1,4 +1,4 @@
-angular.module("chatApp", ["ng", "ngRoute"])
+angular.module("chatApp", ["ng", "ngRoute", "ui.bootstrap"])
 
 
 .config(["$routeProvider", function ($routeProvider) {

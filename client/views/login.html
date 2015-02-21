@@ -7,7 +7,7 @@
 
 		<form novalidate name="loginForm">
 			<label> Username: 
-				<input type="text" name="username" ng-model="user.username" required="required" ng-minlength="2">
+				<input type="text" name="username" ng-model="user.username" required="required" ng-minlength="2" autofocus>
 			</label>
 			<button ng-click="loginForm.$valid && login()">Log in</button>
 		

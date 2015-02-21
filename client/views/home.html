@@ -28,7 +28,7 @@
 				</div>
 
 				<div class="col-md-12 input-group">
-					<input type="text" ng-model="inputText" maxlength="200" class="form-control" placeholder="Enter a message...">
+					<input type="text" ng-model="inputText" maxlength="200" class="form-control" placeholder="Enter a message..." focus-directive>
 					<span class="input-group-btn">
 						<button class="btn btn-default" type="button" ng-click="sendText()">Send</button>
 					</span>
@@ -37,14 +37,8 @@
 			</div>
 		</div>
 		<div class="col-md-3">
-			<div class="row green">
-				Create new room
-			</div>
-			<div class="row input-group">
-					<input type="text" ng-model="newRoomName" maxlength="20" class="form-control" placeholder="Enter a roomname...">
-					<span class="input-group-btn">
-						<button class="btn btn-default" type="button" ng-click="createRoom()">Create</button>
-					</span>
+			<div id="createRoom" class="row text-center">
+				<button class="btn btn-default" ng-click="createRoom()">Create Room</button>
 			</div>
 			<div class="row">
 				<div class="col-md-6 selectBox" ng-class="{true: 'purple', false: 'blue'}[showRooms]" ng-click="show(true)">
@@ -64,8 +58,8 @@
 				<div ng-repeat="(key, val) in openItems[currentOpen.ID].users | orderBy:'val'" ng-show="!showRooms" ng-click="privateChat(val)">
 					{{val}}
 					<span ng-show="openItems[currentOpen.ID].ops[connectedUser]">
-						<i class="fa fa-ban pull-right" title="Ban" ng-click="ban(val); $event.stopPropagation();"></i>
-						<i class="fa fa-user-times pull-right" title="Kick" ng-click="kick(val); $event.stopPropagation();"></i>
+						<i class="fa fa-ban pull-right" title="Ban" data-toggle="tooltip" ng-click="ban(val); $event.stopPropagation();"></i>
+						<i class="fa fa-user-times pull-right" title="Kick" data-toggle="tooltip" ng-click="kick(val); $event.stopPropagation();"></i>
 					</span>
 				</div>
 			</div>
