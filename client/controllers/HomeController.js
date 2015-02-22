@@ -18,7 +18,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		$scope.newRoomItem = "";
 
 		// Used in the html to decide whether to show the list of rooms or a list of users in the current room/chat 
-		$scope.showRooms = false;
+		$scope.showRooms = true;
 
 		$scope.inputText = "";
 
@@ -75,7 +75,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 					$scope.getRooms();
 
-					if (room.topic){
+					if (room.topic) {
 
 						var topicObj = {
 							room: room.name,
@@ -305,6 +305,14 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			$scope.getRooms();
 		});
 
+		socket.on("opped", function () {
+			$scope.getRooms();
+		});
+
+		socket.on("deopped", function () {
+			$scope.getRooms();
+		});
+
 		// new chat messages available in some room - need to check whether we have that room open in openItems
 		// and add the new messages to openItems[ID].messages
 		socket.on("updatechat", function (data1, data2, data3) {
@@ -322,7 +330,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		});
 
-		socket.on("getrooms", function (){
+		socket.on("getrooms", function () {
 			console.log("Rooms have changed");
 			$scope.getRooms();
 		});
@@ -420,6 +428,17 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		$scope.unBan = function (user) {
+
+			socket.emit("unban", {
+				user: user,
+				room: $scope.openItems[$scope.currentOpen.ID].name
+			}, function (success) {
+				$scope.getRooms();
+			});
+
+		};
+
 		$scope.kick = function (user) {
 
 			socket.emit("kick", {
@@ -429,7 +448,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.addOp = function (user){
+		$scope.addOp = function (user) {
 
 			socket.emit("op", {
 				user: user,
@@ -438,12 +457,12 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.deOp = function (user){
+		$scope.deOp = function (user) {
 
 			socket.emit("deop", {
 				user: user,
 				room: $scope.openItems[$scope.currentOpen.ID].name
-			});		
+			});
 
 		};
 
@@ -497,7 +516,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.setTopic = function (){
+		$scope.setTopic = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
 
@@ -519,7 +538,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			});
 
 			modalInstance.result.then(function (selectedItem) {
-				
+
 				var topicObj = {
 					room: room,
 					topic: selectedItem
@@ -532,7 +551,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.setPassword = function (){
+		$scope.setPassword = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
 
@@ -554,7 +573,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			});
 
 			modalInstance.result.then(function (selectedItem) {
-				
+
 				var passwordObj = {
 					room: room,
 					password: selectedItem
@@ -567,7 +586,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.removePassword = function (){
+		$scope.removePassword = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
 
@@ -586,7 +605,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			});
 
 			modalInstance.result.then(function () {
-				
+
 				var passwordObj = {
 					room: room
 				};
@@ -598,15 +617,32 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
-		$scope.listItems = function (type){
+		$scope.listItems = function (type) {
 
-			if (type === "ops"){
-				var listObj = {
+			var listObj;
+
+			if (type === "ops") {
+
+				listObj = {
 					title: "Ops List",
 					isOp: $scope.openItems[$scope.currentOpen.ID].ops[$scope.connectedUser],
 					users: $scope.openItems[$scope.currentOpen.ID].ops,
-					connectedUser: $scope.connectedUser
-				} ;
+					connectedUser: $scope.connectedUser,
+					buttonLabel: "Remove from Ops"
+				};
+
+			} else if (type === "banned") {
+
+				listObj = {
+					title: "Banned List",
+					isOp: $scope.openItems[$scope.currentOpen.ID].ops[$scope.connectedUser],
+					users: $scope.rooms[$scope.openItems[$scope.currentOpen.ID].name].banned,
+					connectedUser: $scope.connectedUser,
+					buttonLabel: "Unban"
+				};
+
+			} else {
+				return;
 			}
 
 			var modalInstance = $modal.open({
@@ -619,19 +655,18 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				}
 			});
 
-			modalInstance.result.then(function () {
-				
-				var passwordObj = {
-					room: room
-				};
+			modalInstance.result.then(function (selectedItem) {
 
-				socket.emit("removepassword", passwordObj);
+				if (type === "op") {
+					$scope.deOp(selectedItem);
+				} else if (type === "banned") {
+					$scope.unBan(selectedItem);
+				}
 
 				return;
 			});
 
 		};
-
 
 
 		// Initialize - get the rooms list and join lobby

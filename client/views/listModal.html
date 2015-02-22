@@ -6,17 +6,20 @@
 <div class="modal-body">
 		    	
 	<ul class="list-group">
-		<li class-"list-group-item" ng-repeat="user in roomObj.users">
+		<li class="list-group-item itemRow" ng-repeat="user in roomObj.users">
 			
-			
-			<span ng-show="roomObj.connectedUser === user">{{user}}</span>
-			<span class="pull-right" ng-show="roomObj.isOp && roomObj.connectedUser === user">
-				<button class="btn btn-danger">Remove from Ops</button>
-			</span>			
+			<div>
+				<span ng-show="roomObj.connectedUser !== user">{{user}}</span>
+				<span class="pull-right" ng-show="roomObj.isOp && roomObj.connectedUser !== user">
+					<button ng-click="ok(user)" class="btn btn-danger">{{roomObj.buttonLabel}}</button>
+				</span>			
+			</div>
 				
-			<span ng-show="roomObj.connectedUser === user">
-				You
-			</span>
+			<div>	
+				<span ng-show="roomObj.connectedUser === user">
+					You
+				</span>
+			</div>
 		
 		</li>
 	</ul>

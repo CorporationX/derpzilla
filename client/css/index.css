@@ -172,3 +172,8 @@ li{
 	right: 0px;
 	cursor: pointer;
 }
+
+.itemRow{
+	height: 56px;
+	line-height: 34px;
+}

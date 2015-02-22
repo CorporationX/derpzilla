@@ -3,11 +3,9 @@ angular.module("chatApp").controller("ListInstanceController", ["$scope", "$moda
 
 		$scope.roomObj = roomObject;
 
-		$scope.returnValue = true;
+		$scope.ok = function (value) {
 
-		$scope.ok = function () {
-
-			$modalInstance.close($scope.returnValue);
+			$modalInstance.close(value);
 
 		};
 
