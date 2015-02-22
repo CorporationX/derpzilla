@@ -1,0 +1,30 @@
+<div class="modal-header">
+	<h3 class="modal-title">{{roomObj.title}}</h3>
+</div>	
+
+
+<div class="modal-body">
+		    	
+	<ul class="list-group">
+		<li class-"list-group-item" ng-repeat="user in roomObj.users">
+			
+			
+			<span ng-show="roomObj.connectedUser === user">{{user}}</span>
+			<span class="pull-right" ng-show="roomObj.isOp && roomObj.connectedUser === user">
+				<button class="btn btn-danger">Remove from Ops</button>
+			</span>			
+				
+			<span ng-show="roomObj.connectedUser === user">
+				You
+			</span>
+		
+		</li>
+	</ul>
+
+</div>
+
+
+<div class="modal-footer">
+	<button class="btn btn-primary" ng-click="close()">Close</button>
+</div>
+

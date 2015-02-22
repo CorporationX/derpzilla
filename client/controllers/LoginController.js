@@ -13,7 +13,16 @@ angular.module("chatApp").controller("LoginController", ["$scope", "$location", 
 			available: false
 		};
 
+		$scope.submitted = false;
+
 		$scope.login = function () {
+
+			$scope.submitted = true;
+
+			if (!$scope.user.username){
+
+				return;
+			}
 
 			socket.emit("adduser", $scope.user.username, function (available) {
 

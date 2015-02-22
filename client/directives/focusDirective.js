@@ -5,8 +5,6 @@ angular.module("chatApp").directive("focusDirective", ["$timeout", "$parse", fun
 
 			scope.$watch("focus", function (value){
 				
-				console.log("value", value);
-
 				if (value === true){
 		            
 		            $timeout(function () {

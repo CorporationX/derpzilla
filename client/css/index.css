@@ -161,3 +161,14 @@ li{
 	width: 95%;
 	margin: 5px;
 }
+
+.heading{
+	position: relative;
+}
+
+.heading span{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	cursor: pointer;
+}

@@ -75,6 +75,16 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 					$scope.getRooms();
 
+					if (room.topic){
+
+						var topicObj = {
+							room: room.name,
+							topic: room.topic
+						};
+
+						socket.emit("settopic", topicObj);
+					}
+
 				} else {
 
 					if (reason === "banned") {
@@ -312,6 +322,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		});
 
+		socket.on("getrooms", function (){
+			console.log("Rooms have changed");
+			$scope.getRooms();
+		});
+
 		// Change whether we show rooms or users in the right panel next to the chat
 		$scope.show = function (show) {
 			$scope.showRooms = show;
@@ -414,6 +429,24 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		$scope.addOp = function (user){
+
+			socket.emit("op", {
+				user: user,
+				room: $scope.openItems[$scope.currentOpen.ID].name
+			});
+
+		};
+
+		$scope.deOp = function (user){
+
+			socket.emit("deop", {
+				user: user,
+				room: $scope.openItems[$scope.currentOpen.ID].name
+			});		
+
+		};
+
 
 		$scope.createRoom = function () {
 
@@ -439,23 +472,167 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		$scope.loginPassword = function (roomItem) {
 
+			var roomObj = {
+				title: "Password is required for Room " + roomItem.name,
+				inputName: "Room Password",
+				placeholder: "Enter Room Password",
+				error: "Password is required"
+			};
+
 			var modalInstance = $modal.open({
-				templateUrl: "/client/views/loginPassword.html",
-				controller: "LoginInstanceController",
+				templateUrl: "/client/views/setRoomItem.html",
+				controller: "SetRoomInstanceController",
 				resolve: {
-					name: function () {
-						return $scope.openItems[$scope.currentOpen.ID].name;
+					roomObject: function () {
+						return roomObj;
 					}
 				}
 			});
 
-			modalInstance.result.then(function (selectedItems) {
-				roomItem.password = selectedItems;
+			modalInstance.result.then(function (selectedItem) {
+				roomItem.password = selectedItem;
 				$scope.joinRoom(roomItem);
 				return;
 			});
 
 		};
+
+		$scope.setTopic = function (){
+
+			var room = $scope.openItems[$scope.currentOpen.ID].name;
+
+			var roomObj = {
+				title: "Set Topic for Room " + room,
+				inputName: "Room Topic",
+				placeholder: "Enter Room Topic",
+				error: "Topic is required"
+			};
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/setRoomItem.html",
+				controller: "SetRoomInstanceController",
+				resolve: {
+					roomObject: function () {
+						return roomObj;
+					}
+				}
+			});
+
+			modalInstance.result.then(function (selectedItem) {
+				
+				var topicObj = {
+					room: room,
+					topic: selectedItem
+				};
+
+				socket.emit("settopic", topicObj);
+
+				return;
+			});
+
+		};
+
+		$scope.setPassword = function (){
+
+			var room = $scope.openItems[$scope.currentOpen.ID].name;
+
+			var roomObj = {
+				title: "Set Password for Room " + room,
+				inputName: "New Password",
+				placeholder: "Enter New Password",
+				error: "Password is required"
+			};
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/setRoomItem.html",
+				controller: "SetRoomInstanceController",
+				resolve: {
+					roomObject: function () {
+						return roomObj;
+					}
+				}
+			});
+
+			modalInstance.result.then(function (selectedItem) {
+				
+				var passwordObj = {
+					room: room,
+					password: selectedItem
+				};
+
+				socket.emit("setpassword", passwordObj);
+
+				return;
+			});
+
+		};
+
+		$scope.removePassword = function (){
+
+			var room = $scope.openItems[$scope.currentOpen.ID].name;
+
+			var roomObj = {
+				title: "Remove Password for Room " + room,
+			};
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/confirmModal.html",
+				controller: "ConfirmInstanceController",
+				resolve: {
+					roomObject: function () {
+						return roomObj;
+					}
+				}
+			});
+
+			modalInstance.result.then(function () {
+				
+				var passwordObj = {
+					room: room
+				};
+
+				socket.emit("removepassword", passwordObj);
+
+				return;
+			});
+
+		};
+
+		$scope.listItems = function (type){
+
+			if (type === "ops"){
+				var listObj = {
+					title: "Ops List",
+					isOp: $scope.openItems[$scope.currentOpen.ID].ops[$scope.connectedUser],
+					users: $scope.openItems[$scope.currentOpen.ID].ops,
+					connectedUser: $scope.connectedUser
+				} ;
+			}
+
+			var modalInstance = $modal.open({
+				templateUrl: "/client/views/listModal.html",
+				controller: "ListInstanceController",
+				resolve: {
+					roomObject: function () {
+						return listObj;
+					}
+				}
+			});
+
+			modalInstance.result.then(function () {
+				
+				var passwordObj = {
+					room: room
+				};
+
+				socket.emit("removepassword", passwordObj);
+
+				return;
+			});
+
+		};
+
+
 
 		// Initialize - get the rooms list and join lobby
 		// if not a user then just redirect to loginlin

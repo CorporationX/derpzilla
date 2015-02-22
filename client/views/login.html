@@ -6,18 +6,24 @@
 		</div>
 
 		<form novalidate name="loginForm">
-			<label> Username: 
-				<input type="text" name="username" ng-model="user.username" required="required" ng-minlength="2" autofocus>
-			</label>
-			<button ng-click="loginForm.$valid && login()">Log in</button>
-		
+			<div>
+				
+				<label for="loginName"> Username: </label>
+
+				<input type="text" id="loginName" name="loginName" ng-model="user.username" required="required" ng-minlength="2" autofocus enter-directive enter="login()">
+				
+				<button ng-click="login()">Log in</button>
+				
+				<div class="errorBlock" ng-show="submitted">
+					<p class="errorMessage" ng-show="errors.available">That username is already taken</p>
+					<p class="errorMessage" ng-show="loginForm.loginName.$error.required">Username is required</p>
+					<p class="errorMessage" ng-show="loginForm.loginName.$error.minlength">Username must be at least 2 characters long</p>
+				</div>
+			
+			</div>
+
 		</form>
 
-		<div class="errorBlock" ng-show="loginForm.username.$touched || loginForm.$submitted">
-			<p class="errorMessage" ng-show="errors.available">That username is already taken</p>
-			<p class="errorMessage" ng-show="loginForm.username.$error.required">Username is required</p>
-			<p class="errorMessage" ng-show="loginForm.username.$error.minlength">Username must be at least 2 characters long</p>
-		</div>
 	
 	</div>
 
