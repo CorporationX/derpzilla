@@ -202,6 +202,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 			$scope.openTabs.push(ID);
 
+			console.log($scope.openItems[$scope.currentOpen.ID]);
 
 		};
 
@@ -302,9 +303,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		});
 
-		// TODO
 		socket.on("servermessage", function (data1, data2, data3) {
-			console.log("recv_privatemsg", data1, " - ", data2, " - ", data3);
+			// console.log("recv_privatemsg", data1, " - ", data2, " - ", data3);
 
 			$scope.getRooms();
 		});
@@ -323,7 +323,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		});
 
 		socket.on("banned", function (data1, data2, data3) {
-			console.log("banned", data1, data2, data3);
+			// console.log("banned", data1, data2, data3);
 
 			var ID = "Room-" + data1;
 
@@ -364,7 +364,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		});
 
 		socket.on("getrooms", function () {
-			console.log("Rooms have changed");
+			// console.log("Rooms have changed");
 			$scope.getRooms();
 		});
 
