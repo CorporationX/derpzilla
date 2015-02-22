@@ -2,11 +2,6 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 	function ($scope, $location, socket, dataFactory, $modal) {
 
-		//
-		// Notes: We only use Homecontroller and home.html now because everything happens on one page and one url
-		//
-
-
 		$scope.connectedUser = "";
 
 		// Keeps the ID of the current open item (Room or Private chat). ID is of the form User-username or Room-roomaname
@@ -21,6 +16,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		$scope.showRooms = true;
 
 		$scope.inputText = "";
+
+		// Key: room or chat name, value: number of messages that havent been seen by user
+		$scope.newMessages = {
+
+		};
 
 		// Any item that is open (user or room). Identified as Room-roomname or User-username
 		// Rooms have a type, name, topic, messages, users 
@@ -58,8 +58,14 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 						topic: "",
 						messages: [],
 						users: [],
-						locked: false
+						locked: false,
+						active: true
 					};
+
+
+					if ($scope.openItems[$scope.currentOpen.ID]) {
+						$scope.openItems[$scope.currentOpen.ID].active = false;
+					}
 
 					if (!(ID in $scope.openItems) && roomObj.pass) {
 						roomItem.locked = true;
@@ -72,6 +78,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 					$scope.currentOpen = {
 						ID: ID
 					};
+
+					$scope.setNewMessages(ID, 0);
 
 					$scope.getRooms();
 
@@ -151,8 +159,16 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			var ID = "User-" + user;
 
 			if ($scope.openTabs.indexOf(ID) > -1) {
+
+				$scope.setNewMessages(ID, 0);
+
+				$scope.openItems[$scope.currentOpen.ID].active = false;
+
+				$scope.openItems[ID].active = true;
+
 				$scope.currentOpen.ID = ID;
 				return;
+
 			}
 
 			var userObj = {
@@ -168,8 +184,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				topic: "Private Chat with " + user,
 				messages: [],
 				users: userObj,
-				chatWith: user
+				chatWith: user,
+				active: true
 			};
+
+			$scope.openItems[$scope.currentOpen.ID].active = false;
 
 			if (!(ID in $scope.openItems)) {
 				$scope.openItems[ID] = userItem;
@@ -178,6 +197,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			$scope.currentOpen = {
 				ID: ID
 			};
+
+			$scope.setNewMessages(ID, 0);
 
 			$scope.openTabs.push(ID);
 
@@ -247,6 +268,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 				$scope.openItems[ID].messages.push(msg);
 
+				if (!(ID in $scope.openTabs)) {
+					$scope.openTabs.push(ID);
+				}
+
 			} else {
 
 
@@ -269,6 +294,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				$scope.openItems[ID] = userItem;
 
 				$scope.openTabs.push(ID);
+			}
+
+			if ($scope.currentOpen.ID !== ID) {
+				$scope.setNewMessages(ID, 1);
 			}
 
 		});
@@ -326,6 +355,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 			}
 
+			if (ID !== $scope.currentOpen.ID) {
+				$scope.setNewMessages(ID, 1);
+			}
+
 			$scope.getRooms();
 
 		});
@@ -343,11 +376,19 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// Used to open one of the tabs that we have open - either a room or a user
 		// currently don't have a way to delete tabs
 		$scope.open = function (ID) {
+
+			$scope.newMessages[ID] = {};
+			$scope.newMessages[ID].msgs = 0;
+			$scope.openItems[$scope.currentOpen.ID].active = false;
 			$scope.currentOpen.ID = ID;
+			$scope.openItems[$scope.currentOpen.ID].active = true;
 		};
 
 		// CLOSE TAB
 		$scope.closeTab = function (ID) {
+
+			$scope.newMessages[ID] = {};
+			$scope.newMessages[ID].msgs = 0;
 
 			var index = 0;
 			var newIDIndex = 0;
@@ -389,6 +430,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 			}
 
+			$scope.setNewMessages(ID, 0);
+
 		};
 
 		$scope.openChatRoom = function (room) {
@@ -403,7 +446,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			var index = $scope.openTabs.indexOf(ID);
 
 			if (index > -1) {
+				$scope.openItems[$scope.currentOpen.ID].active = false;
 				$scope.currentOpen.ID = ID;
+				$scope.openItems[$scope.currentOpen.ID].active = true;
+				$scope.setNewMessages(ID, 0);
 				return;
 			}
 
@@ -464,6 +510,11 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				room: $scope.openItems[$scope.currentOpen.ID].name
 			});
 
+		};
+
+		$scope.setNewMessages = function (ID, num) {
+			$scope.newMessages[ID] = {};
+			$scope.newMessages[ID].msgs = num;
 		};
 
 
