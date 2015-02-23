@@ -1,6 +1,6 @@
-angular.module("chatApp").controller("HomeController", ["$scope", "$location", "socket", "dataFactory", "$modal",
+angular.module("chatApp").controller("HomeController", ["$scope", "$location", "socket", "dataFactory", "$modal", "$timeout",
 
-	function ($scope, $location, socket, dataFactory, $modal) {
+	function ($scope, $location, socket, dataFactory, $modal, $timeout) {
 
 		$scope.connectedUser = "";
 
@@ -32,6 +32,10 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		// List of room names
 		$scope.rooms = {};
+
+		$scope.alerts = [];
+		$scope.nextAlertID = 0;
+		$scope.alertRemoveID = 0;
 
 		// Get the roomlist
 		$scope.getRooms = function () {
@@ -96,9 +100,21 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				} else {
 
 					if (reason === "banned") {
-						console.log("You are banned fcker !!!");
+
+						var bannedObj = {
+							type: "danger",
+							msg: "You cannot join Room " + roomObj.room + ", you are banned"
+						};
+
+						$scope.addAlert(bannedObj);
+
 					} else if (reason === "wrong password") {
-						console.log("wrong password");
+						var wrongObj = {
+							type: "danger",
+							msg: "Wrong password for Room " + roomObj.room
+						};
+
+						$scope.addAlert(wrongObj);
 					}
 
 				}
@@ -310,11 +326,20 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		});
 
 		socket.on("kicked", function (data1, data2, data3) {
-			// console.log("kicked", data1, data2, data3);
+			console.log("kicked", data1, data2, data3);
 
 			var ID = "Room-" + data1;
 
 			if (ID in $scope.openItems && data2 === $scope.connectedUser) {
+
+				var kickObj = {
+					type: "danger",
+					msg: "You have been kicked from Room " + data1 + " by " + data3
+				};
+
+				$scope.addAlert(kickObj);
+
+
 				$scope.closeTab(ID);
 			}
 
@@ -328,6 +353,14 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			var ID = "Room-" + data1;
 
 			if (ID in $scope.openItems && data2 === $scope.connectedUser) {
+
+				var banObj = {
+					type: "danger",
+					msg: "You have been banned from Room " + data1 + " by " + data3
+				};
+
+				$scope.addAlert(banObj);
+
 				$scope.closeTab(ID);
 			}
 
@@ -461,6 +494,36 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			}
 
 			$scope.joinRoom(roomItem);
+		};
+
+		$scope.addAlert = function (alertObj) {
+
+			alertObj.ID = $scope.nextAlertID;
+
+			$scope.alerts.push(alertObj);
+
+			$scope.nextAlertID++;
+
+			$timeout(function () {
+
+				for (var i = 0; i < $scope.alerts.length; i++) {
+
+					if ($scope.alerts[i].ID <= $scope.alertRemoveID) {
+						$scope.alerts.splice(i, 1);
+					}
+
+				}
+
+				$scope.alertRemoveID++;
+
+			}, 3000);
+
+		};
+
+		$scope.closeAlert = function (ID) {
+
+			$scope.alerts.splice(index, 1);
+
 		};
 
 		$scope.ban = function (user) {

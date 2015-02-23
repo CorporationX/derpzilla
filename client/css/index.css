@@ -30,6 +30,7 @@ body{
 
 .roomChat{
 	background-color: rgb(224,224,224);
+	position: relative;
 	/*border: 1px solid #337ab7;*/
 }
 
@@ -86,8 +87,8 @@ body{
 
 .fixedsize{
     height: 300px;
-    overflow: scroll;
-}
+    overflow: scroll
+;}
 
 .fixedheight{
 	height:400px;
@@ -103,4 +104,11 @@ body{
 
 .tabborder i{
 	line-height: 20px;
+}
+
+.alertDiv{
+	position: absolute;
+	top: 0px;
+	width: 90%;
+	z-index: 100;
 }

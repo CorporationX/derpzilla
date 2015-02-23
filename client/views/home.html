@@ -4,7 +4,7 @@
 
 		<span class="pull-right">
 			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" title="Settings" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
 					<i class="fa fa-cog fa-2x"></i>
 				</button>
 
@@ -30,16 +30,16 @@
 			
 			<div class="row">
 				<tabset type="pills">
-					<tab class="col-md-2 tabborder" ng-repeat="currTab in openTabs" ng-click="open(currTab)" active="openItems[currTab].active">
+					<tab class="col-md-2 tabborder" ng-repeat="tab in openTabs" ng-click="open(tab)" active="tab===currentOpen.ID">
 						<tab-heading>
 						
-						<span class="pull-left" ng-show="openItems[currTab].type === 'User'"><i class="fa fa-user"></i></span>
+						<span class="pull-left" ng-show="openItems[tab].type === 'User'"><i class="fa fa-user"></i></span>
 						
-						<span class="pull-left" ng-show="openItems[currTab].type === 'Room'"><i class="fa fa-home"></i></span>
+						<span class="pull-left" ng-show="openItems[tab].type === 'Room'"><i class="fa fa-home"></i></span>
 
-					    &nbsp; {{openItems[currTab].name}} 
-						<a ng-click="closeTab(currTab)" ng-show="currTab !== 'Room-lobby'" href=''><i title="Close Tab" ng-class="{true: 'whiteicon', false: 'bloob'}[currTab === currentOpen.ID]" class="fa fa-times pull-right"></i></a>
-						<a ng-show="newMessages[currTab].msgs"><i class="fa fa-bell pull-right" title="New messages"></i></a>
+					    &nbsp; {{openItems[tab].name}} 
+						<a ng-click="closeTab(tab)" href=''><i ng-class="{true: 'whiteicon'}[tab===currentOpen.ID]" class="fa fa-times pull-right"></i></a>
+						<a ng-show="newMessages[tab].msgs"><i class="fa fa-exclamation-triangle pull-right" title="New messages"></i></a>
 						</tab-heading>
 					</tab>
 				</tabset>
@@ -48,6 +48,11 @@
 			<div class="row roomChat">
 				
 				<div class="col-md-12 roomChatBox fixedheight2">
+
+					<div class="alertDiv text-center">
+						<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+					</div>
+				
 					<ul>
 						<li ng-repeat="message in openItems[currentOpen.ID].messages">
 							<span class="col-md-3 text-left">
@@ -132,14 +137,3 @@
 		</div>
 	</div>
 </div>
-
-openTabs: {{openTabs}}
-<br>
-<br>
-OpenItems: {{openItems}}
-<br>
-<br>
-CurrentOpen: {{currentOpen}}
-<br>
-<br>
-Rooms: {{rooms}}
