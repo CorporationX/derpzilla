@@ -69,7 +69,7 @@ body{
 	border: 1px solid #337ab7;
 }
 
-.heading span{
+.spanheading{
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -106,9 +106,29 @@ body{
 	line-height: 20px;
 }
 
+.hideoverflow{
+	overflow:hidden;
+}
+
 .alertDiv{
 	position: absolute;
 	top: 0px;
 	width: 90%;
 	z-index: 100;
+}
+
+.which-userlist{
+	border: 1px solid #337ab7;
+	border-radius: 4px;
+	margin-bottom: 15px;
+}
+
+.which-userlist p{
+    margin: 0 auto;
+   	background-color: #B5D7F5;	
+    text-align: center;
+}
+
+.italic{
+	font-style: italic;
 }
