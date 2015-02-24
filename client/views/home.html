@@ -15,7 +15,7 @@
 					<li role="presentation" ng-show="openItems[currentOpen.ID].ops[connectedUser]"><a role="menuitem" tabindex="-1" ng-click="setPassword()">Set Room Password</a></li>
 					<li role="presentation" ng-show="openItems[currentOpen.ID].ops[connectedUser] && rooms[openItems[currentOpen.ID].name].locked"><a role="menuitem" tabindex="-1" ng-click="removePassword()">Remove Room Password</a></li>
 					<li role="presentation"><a role="menuitem" tabindex="-1" ng-click="listItems('ops')">Ops List</a></li>
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Banned List</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" ng-click="listItems('banned')">Banned List</a></li>
 					<li role="presentation" ng-show="currentOpen.ID !== 'Room-lobby'" class="divider"></li>
 					<li role="presentation"><a role="menuitem" tabindex="-1" ng-show="currentOpen.ID !== 'Room-lobby'" ng-click="closeTab(currentOpen.ID)">Leave Room</a></li>
 				</ul>

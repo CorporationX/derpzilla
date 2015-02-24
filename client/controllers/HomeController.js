@@ -15,6 +15,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// Used in the html to decide whether to show the list of rooms or a list of users in the current room/chat 
 		$scope.showRooms = true;
 
+		// The text in the main input that is entered in the current Room or user chat
 		$scope.inputText = "";
 
 		// Key: room or chat name, value: number of messages that havent been seen by user
@@ -33,6 +34,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 		// List of room names
 		$scope.rooms = {};
 
+		// Any alerts that come up during the execution arrive here. They disappear in 3 seconds or when a user clicks closes them manually
 		$scope.alerts = [];
 		$scope.nextAlertID = 0;
 		$scope.alertRemoveID = 0;
@@ -56,6 +58,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 					var ID = "Room-" + roomObj.room;
 
+					// Room object with all variables that are defined in openItems above. active is True so that the tab gets its class set
 					var roomItem = {
 						type: "Room",
 						name: roomObj.room,
@@ -67,6 +70,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 					};
 
 
+					// The current open Room or chat stops being active
 					if ($scope.openItems[$scope.currentOpen.ID]) {
 						$scope.openItems[$scope.currentOpen.ID].active = false;
 					}
@@ -83,6 +87,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 						ID: ID
 					};
 
+					// The Room we are creating or joining has no unseen messages
 					$scope.setNewMessages(ID, 0);
 
 					$scope.getRooms();
@@ -174,6 +179,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 			var ID = "User-" + user;
 
+			// If the chat window is already open as a tab then we make it active and open it
 			if ($scope.openTabs.indexOf(ID) > -1) {
 
 				$scope.setNewMessages(ID, 0);
@@ -313,6 +319,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				$scope.openTabs.push(ID);
 			}
 
+			// If the chat window isnt currently open and active then we need to notify the user that there are unseen messages
 			if ($scope.currentOpen.ID !== ID) {
 				$scope.setNewMessages(ID, 1);
 			}
@@ -325,6 +332,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			$scope.getRooms();
 		});
 
+		// If a kicked message arrives then we need to notify the user with an alert
 		socket.on("kicked", function (data1, data2, data3) {
 			console.log("kicked", data1, data2, data3);
 
@@ -347,6 +355,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		});
 
+		// If a banned message arrives then we need to notify the user with an alert
 		socket.on("banned", function (data1, data2, data3) {
 			// console.log("banned", data1, data2, data3);
 
@@ -417,7 +426,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			$scope.openItems[$scope.currentOpen.ID].active = true;
 		};
 
-		// CLOSE TAB
+		// Used to close a tab. We need to remove the item (room or userchat) from the openTabs, change currentOpen and delete the openItems object if it is a Room
+		// because we want to keep user chat messages if the conversation happens to carry on later
 		$scope.closeTab = function (ID) {
 
 			$scope.newMessages[ID] = {};
@@ -467,6 +477,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Used to open a Room. If the room is already in an open tab then we just want to make that room currentOpen and active
+		// otherwise we want to fill in the password if needed and join the room
 		$scope.openChatRoom = function (room) {
 
 
@@ -496,6 +508,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 			$scope.joinRoom(roomItem);
 		};
 
+
+		// Add an alert that stays up for 3 seconds or until the user closes it himself
 		$scope.addAlert = function (alertObj) {
 
 			alertObj.ID = $scope.nextAlertID;
@@ -526,6 +540,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Ban a user
 		$scope.ban = function (user) {
 
 			socket.emit("ban", {
@@ -537,6 +552,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Unban a user - done from the banned list submenu in the top right
 		$scope.unBan = function (user) {
 
 			socket.emit("unban", {
@@ -548,6 +564,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Kick a user
 		$scope.kick = function (user) {
 
 			socket.emit("kick", {
@@ -557,6 +574,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Make a user an OP
 		$scope.addOp = function (user) {
 
 			socket.emit("op", {
@@ -566,6 +584,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Remove the OP status of a user - can be done in the tab next to the chat or from the Op list in the top right submenu
 		$scope.deOp = function (user) {
 
 			socket.emit("deop", {
@@ -575,12 +594,15 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Holds key value pairs where the key is either Room-roomname or User-username and the value is 0 or 1 
+		// indicating whether the room has messages that the user hasnt seen yet that is to say the tab isnt open
 		$scope.setNewMessages = function (ID, num) {
 			$scope.newMessages[ID] = {};
 			$scope.newMessages[ID].msgs = num;
 		};
 
 
+		// Open the create room modal
 		$scope.createRoom = function () {
 
 			var modalInstance = $modal.open({
@@ -603,6 +625,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Open the setRoomItem modal that we use in this instance to let the user type in a password to enter a room
 		$scope.loginPassword = function (roomItem) {
 
 			var roomObj = {
@@ -630,6 +653,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Open the setRoomItem modal that we use in this instance to let an OP type in a topic for a room
 		$scope.setTopic = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
@@ -665,6 +689,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Open the setRoomItem modal that we use in this instance to let an OP set a password
 		$scope.setPassword = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
@@ -673,7 +698,8 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 				title: "Set Password for Room " + room,
 				inputName: "New Password",
 				placeholder: "Enter New Password",
-				error: "Password is required"
+				error: "Password is required",
+				password: true
 			};
 
 			var modalInstance = $modal.open({
@@ -700,6 +726,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Open the confirm modal to verify that the OP actually wants to remove the password for the remove
 		$scope.removePassword = function () {
 
 			var room = $scope.openItems[$scope.currentOpen.ID].name;
@@ -731,6 +758,7 @@ angular.module("chatApp").controller("HomeController", ["$scope", "$location", "
 
 		};
 
+		// Open the List modal that we use to list OPS and Banned users. And if the user is an OP then he can DeOP and unban users
 		$scope.listItems = function (type) {
 
 			var listObj;

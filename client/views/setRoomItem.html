@@ -7,7 +7,8 @@
 		    	
     <div class="form-group">
     	<label for="roomItem">{{roomObj.inputName}}</label>
-		<input type="text" class="form-control" ng-model="returnValue" placeholder="{{roomObj.placeholder}}" required="required" focus-directive enter-directive enter="ok()">
+		<input type="text" class="form-control" ng-hide="roomObj.password" ng-model="returnValue" placeholder="{{roomObj.placeholder}}" required="required" focus-directive enter-directive enter="ok()">
+		<input type="password" class="form-control" ng-show="roomObj.password" ng-model="returnValue" placeholder="{{roomObj.placeholder}}" required="required" focus-directive enter-directive enter="ok()">
 		<p class="errorMessage" ng-show="!returnValue && submitted">{{roomObj.error}}</p>
 	</div>
 
