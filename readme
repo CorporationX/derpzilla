@@ -6,6 +6,6 @@ In the chatzilla main folder type:
 Then open up another terminal and go to the server folder and type:
 	"npm install; node chatserver.js"
 
-Now open up a browser and type "localhos:8888"
+Now open up a browser and type "localhost:8888"
 
 VOILA

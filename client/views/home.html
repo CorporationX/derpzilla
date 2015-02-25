@@ -6,7 +6,7 @@
 		</div>
 		<span class="pull-right spanheading">
 			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+				<button class="btn btn-default dropdown-toggle" type="button" title="Settings" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
 					<i class="fa fa-cog fa-2x"></i>
 				</button>
 
@@ -14,7 +14,7 @@
 					<li role="presentation" ng-show="openItems[currentOpen.ID].ops[connectedUser]"><a role="menuitem" tabindex="-1" ng-click="setTopic()">Set Room Topic</a></li>
 					<li role="presentation" ng-show="openItems[currentOpen.ID].ops[connectedUser]"><a role="menuitem" tabindex="-1" ng-click="setPassword()">Set Room Password</a></li>
 					<li role="presentation" ng-show="openItems[currentOpen.ID].ops[connectedUser] && rooms[openItems[currentOpen.ID].name].locked"><a role="menuitem" tabindex="-1" ng-click="removePassword()">Remove Room Password</a></li>
-					<li role="presentation"><a role="menuitem" tabindex="-1" ng-click="listItems('ops')">Ops List</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" ng-click="listItems('ops')">Admin List</a></li>
 					<li role="presentation"><a role="menuitem" tabindex="-1" ng-click="listItems('banned')">Banned List</a></li>
 					<li role="presentation" ng-show="currentOpen.ID !== 'Room-lobby'" class="divider"></li>
 					<li role="presentation"><a role="menuitem" tabindex="-1" ng-show="currentOpen.ID !== 'Room-lobby'" ng-click="closeTab(currentOpen.ID)">Leave Room</a></li>
@@ -29,28 +29,28 @@
 	</div>
 	<div class="row">
 		<div class="col-md-9 fixedheight">
-			
-			<div class="row">
+
+			<div class="row horizontal-scroll">
 				<!-- Tabset for open chats -->
 				<tabset type="pills">
 					<tab class="col-md-2 tabborder" ng-repeat="tab in openTabs" ng-click="open(tab)" active="openItems[tab].active">
 						<tab-heading>
-						<span class="hide-overflow">
+							<span class="hide-overflow">
 
-						<!-- icons:user when in private chat and a house when in room -->
-						<span class="pull-left" ng-show="openItems[tab].type === 'User'"><i class="fa fa-user"></i></span>
+							<!-- icons:user when in private chat and a house when in room -->
+							<span class="pull-left" ng-show="openItems[tab].type === 'User'"><i class="fa fa-user"></i></span>
 						
-						<span class="pull-left" ng-show="openItems[tab].type === 'Room'"><i class="fa fa-home"></i></span>
+							<span class="pull-left" ng-show="openItems[tab].type === 'Room'"><i class="fa fa-home"></i></span>
 
-						<!-- Dealing with names of conversations that are too long -->
-						<span ng-show="(openItems[tab].name).length <= 9">&nbsp; {{openItems[tab].name}} </span>
-						<span ng-show="(openItems[tab].name).length > 9">&nbsp; {{(openItems[tab].name).slice(0,8)}}... </span>
+							<!-- Dealing with names of conversations that are too long -->
+							<span ng-show="(openItems[tab].name).length <= 9">&nbsp; {{openItems[tab].name}} </span>
+							<span ng-show="(openItems[tab].name).length > 9">&nbsp; {{(openItems[tab].name).slice(0,8)}}... </span>
 						
-						<!-- icons: x to close and bell for new messages -->
-						<a ng-click="closeTab(tab)" href=''><i ng-class="{true: 'whiteicon'}[tab===currentOpen.ID]" ng-show="openItems[tab].name !== 'lobby'" class="fa fa-times pull-right"></i></a>
-						<a ng-show="newMessages[tab].msgs"><i class="fa fa-bell pull-right" title="New messages"></i></a>
+							<!-- icons: x to close and bell for new messages -->
+							<a title="close tab" ng-click="closeTab(tab)" href=''><i title="close tab i"ng-class="{true: 'whiteicon'}[tab===currentOpen.ID]" ng-show="openItems[tab].name !== 'lobby'" class="fa fa-times pull-right"></i></a>
+							<a title="new message!" ng-show="newMessages[tab].msgs"><i class="fa fa-bell pull-right" title="New messages"></i></a>
 
-						</span>
+							</span>
 						</tab-heading>
 					</tab>
 				</tabset>
@@ -59,7 +59,6 @@
 			<div class="row roomChat">
 				
 				<div class="col-md-12 roomChatBox fixedheight2">
-
 					<div class="alertDiv text-center">
 						<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 					</div>
@@ -137,19 +136,19 @@
   					<!-- If the user is you and you are an admin-->
   					<tab ng-repeat="(key,val) in openItems[currentOpen.ID].ops | orderBy: 'val'" ng-show="val === connectedUser">
   						<tab-heading>
-  							You ({{val}}) - admin
+  							You ({{val}}) - <span class="italic">admin</span>
   						</tab-heading>
   					</tab>
 
   					<!-- If the user is not you but is an admin-->
 					<tab ng-repeat="(key,val) in openItems[currentOpen.ID].ops | orderBy:'val'" ng-show="val !== connectedUser" ng-click="privateChat(val)">
 						<tab-heading>
-							{{val}} - admin
+							{{val}} - <span class="italic">admin</span>
 							<!-- Icons to ban user, kick out of room and de-op -->
 							<span ng-show="openItems[currentOpen.ID].ops[connectedUser]">
-								<a ng-click="ban(val); $event.stopPropagation();" ><i class="fa fa-ban pull-right"></i></a>
-								<a ng-click="kick(val); $event.stopPropagation();" ><i class="fa fa-user-times pull-right"></i></a>
-								<a ng-click="deOp(val); $event.stopPropagation();" ><i class="fa fa-level-down pull-right"></i></a>
+								<a title="Ban user from room" ng-click="ban(val); $event.stopPropagation();" ><i class="fa fa-ban pull-right"></i></a>
+								<a title="Kick user out of room" ng-click="kick(val); $event.stopPropagation();" ><i class="fa fa-user-times pull-right"></i></a>
+								<a title="Take user off admin list" ng-click="deOp(val); $event.stopPropagation();" ><i class="fa fa-level-down pull-right"></i></a>
 							</span>
   						</tab-heading>
   					</tab>
@@ -160,9 +159,9 @@
 							{{val}}
 							<!-- Icons to ban user, kick out of room and add as op -->
 							<span ng-show="openItems[currentOpen.ID].ops[connectedUser]">
-								<a ng-click="ban(val); $event.stopPropagation();" ><i class="fa fa-ban pull-right"></i></a>
-								<a ng-click="kick(val); $event.stopPropagation();" ><i class="fa fa-user-times pull-right"></i></a>
-								<a ng-click="addOp(val); $event.stopPropagation();" ><i class="fa fa-user-plus pull-right"></i></a>
+								<a title="Ban user from room" ng-click="ban(val); $event.stopPropagation();" ><i class="fa fa-ban pull-right"></i></a>
+								<a title="Kick user out of room" ng-click="kick(val); $event.stopPropagation();" ><i class="fa fa-user-times pull-right"></i></a>
+								<a title="Make user an admin" ng-click="addOp(val); $event.stopPropagation();" ><i class="fa fa-user-plus pull-right"></i></a>
 							</span>
   						</tab-heading>
   					</tab>

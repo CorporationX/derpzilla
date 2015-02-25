@@ -87,7 +87,7 @@ body{
 
 .fixedsize{
     height: 300px;
-    overflow: scroll
+    overflow: scroll;
 ;}
 
 .fixedheight{
@@ -131,4 +131,11 @@ body{
 
 .italic{
 	font-style: italic;
+}
+
+.horizontal-scroll{
+    white-space: nowrap;
+    height: 42px;
+    overflow-x: scroll;
+    width:auto;
 }
